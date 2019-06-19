@@ -7,40 +7,43 @@
   let map;
   let marker;
 
-  onMount(() => {
-    map = L.map('map').setView([59.376, 18.079], 10);
+  function addMarkerToMap (latlng) {
+    if (marker) {
+      map.removeLayer(marker);
+    }
+    marker = L.marker(latlng).addTo(map);
+  }
 
+  onMount(() => {
+    // initialise the map
+    map = L.map('map');
+    map.setView([59.376, 18.079], 10);
     map.scrollWheelZoom.disable();
-    
+
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
         attribution: '',
         maxZoom: 18,
         id: 'mapbox.streets',
         accessToken: mapboxToken
+    }).on('load', (e) => {
+      if ($position) {
+        addMarkerToMap($position);
+      }
     }).addTo(map);
 
-    map.on('click', onMapClick);
+    // add a click handler to add a marker
+    map.on('click', (e) => {
+      position.set(e.latlng);
+      addMarkerToMap(e.latlng);
+    });
   });
-  
-  const onMapClick = (e) => {
-    addMarkerToMap(e.latlng);
-  }
-
-  const addMarkerToMap = (latlng) => {
-    if (marker) {
-      marker.setLatLng(latlng);
-    } else {
-      marker = L.marker(latlng).addTo(map);
-    }
-    position.set(latlng);
-  }
 </script>
 
 <style>
   #map {
     width: 100%;
     max-width: 100%;
-    height: 580px;
+    height: auto;
     margin: 0;
     padding: 0;
   }

@@ -1,18 +1,59 @@
 <script>
+	import { onDestroy } from 'svelte';
 	import RainGraph from './components/RainGraph.svelte';
 	import Map from './components/Map.svelte';
+	import { position, useLocalStorage } from './stores.js';
+
+	// enable local storage for position
+	const ls = useLocalStorage(position, 'position');
+
+	onDestroy(ls);
 </script>
 
 <style>
-	:global(body) {
+	:global(html, body) {
 		width: 100%;
+		height: 100vh;
+		margin: 0;
 		padding: 0;
 	}
 
-	h1 {
-		margin-bottom: 0;
+	.container-fluid {
+		display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: stretch;
+    align-content: stretch;
+		height: 100%;
+	}
+
+	.row {
+		display: flex;
+		justify-content: center;
+		min-height: 5rem;
+	}
+
+	.title h1 {
+		margin: 5px;
 		text-align: center;
 		color: #73B6E6;
+		font-weight: bold;
+	}
+
+	.graph {
+		height: 30%;
+	}
+
+	.banner {
+		height: 30%;
+		font-size: 2.5rem;
+		align-items: center;
+		text-align: center;
+	}
+
+	.map {
+		height: 100%;
 	}
 </style>
 
@@ -27,14 +68,20 @@
 </svelte:head>
 
 <div class="container-fluid">
-	<div class="row">
+	<div class="row title">
 		<h1>Will It Rain?</h1>
 	</div>
-	<div class="row">
-		<RainGraph/>
-	</div>
-	<div class="row">
-		<Map/>
+	{#if $position}
+		<div class="row graph">
+			<RainGraph class="rain-graph" />
+		</div>
+	{:else}
+		<div class="row banner">
+			<p>Click on the map and get wet!</p>
+		</div>
+	{/if}
+	<div class="row map">
+		<Map />
 	</div>
 </div>
 
