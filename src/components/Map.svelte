@@ -8,7 +8,7 @@
   let marker;
 
   onMount(() => {
-    map = L.map('map').setView([59.376, 18.079], 13);
+    map = L.map('map').setView([59.376, 18.079], 10);
 
     map.scrollWheelZoom.disable();
     

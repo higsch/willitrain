@@ -12,13 +12,7 @@
 	h1 {
 		margin-bottom: 0;
 		text-align: center;
-		color: #638ce2;
-	}
-
-	h2 {
-		font-size: 1.4em;
-		text-align: center;
-		color: #638ce2;
+		color: #73B6E6;
 	}
 </style>
 
@@ -35,7 +29,6 @@
 <div class="container-fluid">
 	<div class="row">
 		<h1>Will It Rain?</h1>
-		<h2>Sweden Edition</h2>
 	</div>
 	<div class="row">
 		<RainGraph/>

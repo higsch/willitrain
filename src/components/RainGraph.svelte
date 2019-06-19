@@ -6,39 +6,38 @@
   import SMHI from '../smhi.js';
 
   let pos;
+  let data;
 
   const margin = {
     top: 10,
-    right: 30,
+    right: 0,
     bottom: 30,
-    left: 60
+    left: 30
   };
-  const width = 460 - margin.left - margin.right;
-  const height = 400 - margin.top - margin.bottom;
 
-  const drawGraph = (data) => {
-    d3.selectAll('svg').remove();
+  let width = 100;
+  let height = 280;
 
-    const svg = d3.select('#graph-area')
-      .append('svg')
-      .attr('width', width + margin.left + margin.right)
-      .attr('height', height + margin.top + margin.bottom)
+  const drawGraph = (data, width, height) => {
+    d3.selectAll('g').remove();
+
+    const svg = d3.select('#graph')
       .append('g')
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
     
     // x axis
     const x = d3.scaleLinear()
       .domain(d3.extent(data, function(d) { return d.time; }))
-      .range([0, width]);
+      .range([0, width - margin.left - margin.right]);
     
     svg.append('g')
-      .attr('transform', 'translate(0,' + height + ')')
+      .attr('transform', 'translate(0,' + (height - margin.top - margin.bottom) +')')
       .call(d3.axisBottom(x));
 
     // y axis
     const y = d3.scaleLinear()
       .domain([0, d3.max(data, function(d) { return + d.value; })])
-      .range([height, 0]);
+      .range([height - margin.top - margin.bottom, 0]);
     
     svg.append('g')
       .call(d3.axisLeft(y));
@@ -46,9 +45,7 @@
     // the line
     svg.append('path')
       .datum(data)
-      .attr('fill', 'none')
-      .attr('stroke', 'steelblue')
-      .attr('stroke-width', 1.5)
+      .attr('fill', '#73B6E6')
       .attr('d', d3.line()
         .x(function(d) { return x(d.time); })
         .y(function(d) { return y(d.value); })
@@ -56,26 +53,41 @@
       );
   };
 
-  const refresh = async (latlng) => {
+  const fetchNewData = async (latlng) => {
     const prediction = await SMHI.fetchPrediction(latlng);
-    console.log(prediction);
-    const data = SMHI.extractRain(prediction);
-    console.log(data);
-    drawGraph(data);
+    data = SMHI.extractRain(prediction);
   };
 
   const subPosition = position.subscribe(value => {
     if (value.lat && value.lng) {
-      refresh(value);
+      fetchNewData(value);
+      pos = position;
     }
   });
+
+  $: {
+    if (data) {
+      drawGraph(data, width, height);
+    }
+  }
 
   onDestroy(subPosition);
 </script>
 
 <style>
-
+  #graph-area {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    vertical-align: top;
+    overflow: hidden;
+  }
 </style>
 
-<div id="graph-area">
+<div id="graph-area"
+     bind:offsetWidth={width}>
+  <svg id="graph"
+       width={width}
+       height={height}>
+  </svg>
 </div>
