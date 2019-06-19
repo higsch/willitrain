@@ -7,19 +7,19 @@
   let map;
   let marker;
 
-  function addMarkerToMap (latlng) {
+  const addMarkerToMap = (latlng) => {
     if (marker) {
       marker.setLatLng(latlng);
     } else {
       marker = L.marker(latlng).addTo(map);
     }
-  }
+  };
 
   onMount(() => {
-    // initialise the map
-    map = L.map('map');
+    map = L.map('map', {
+      scrollWheelZoom: false
+    });
     map.setView([59.376, 18.079], 10);
-    map.scrollWheelZoom.disable();
 
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
         attribution: '',
@@ -32,7 +32,6 @@
       }
     }).addTo(map);
 
-    // add a click handler to add a marker
     map.on('click', (e) => {
       position.set(e.latlng);
       addMarkerToMap(e.latlng);

@@ -1,11 +1,10 @@
 <script>
   import * as d3 from 'd3'
   import { position } from '../stores.js';
-  import { onDestroy } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
 
   import SMHI from '../smhi.js';
 
-  let pos;
   let data;
 
   const margin = {
@@ -15,10 +14,12 @@
     left: 30
   };
 
-  let width = 100;
-  let height = 280;
+  let width;
+  let height;
 
-  const drawGraph = (data, width, height) => {
+  const drawGraph = (data) => {
+    if (!data) return;
+
     d3.selectAll('g').remove();
 
     const svg = d3.select('#graph')
@@ -56,20 +57,16 @@
   const fetchNewData = async (latlng) => {
     const prediction = await SMHI.fetchPrediction(latlng);
     data = SMHI.extractRain(prediction);
+    return(data);
   };
 
   const subPosition = position.subscribe(value => {
     if (value.lat && value.lng) {
-      fetchNewData(value);
-      pos = position;
+      data = fetchNewData(value);
     }
   });
-
-  $: {
-    if (data) {
-      drawGraph(data, width, height);
-    }
-  }
+  
+  $: drawGraph(data, width, height);
 
   onDestroy(subPosition);
 </script>
@@ -85,7 +82,8 @@
 </style>
 
 <div id="graph-area"
-     bind:offsetWidth={width}>
+     bind:offsetWidth={width}
+     bind:offsetHeight={height}>
   <svg id="graph"
        width={width}
        height={height}>
