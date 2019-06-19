@@ -9,9 +9,10 @@
 
   function addMarkerToMap (latlng) {
     if (marker) {
-      map.removeLayer(marker);
+      marker.setLatLng(latlng);
+    } else {
+      marker = L.marker(latlng).addTo(map);
     }
-    marker = L.marker(latlng).addTo(map);
   }
 
   onMount(() => {
