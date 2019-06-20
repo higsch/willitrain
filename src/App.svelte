@@ -8,6 +8,7 @@
 	const ls = useLocalStorage(position, 'position');
 
 	const windowResizeHandler = (e) => {
+		document.body.width = window.innerWidth;
 		document.body.height = window.innerHeight;
 	};
 	windowResizeHandler();
@@ -17,7 +18,6 @@
 
 <style>
 	:global(html, body) {
-		width: 100%;
 		margin: 0;
 		padding: 0;
 	}
@@ -66,7 +66,7 @@
 	}
 </style>
 
-<svelte:window on:resize={windowResizeHandler}/>
+<svelte:window on:resize={windowResizeHandler} />
 
 <svelte:head>
 	<title>Will It Rain – Sweden Edition</title>
