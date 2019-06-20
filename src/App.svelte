@@ -8,7 +8,6 @@
 
 	// enable local storage for position
 	const ls = useLocalStorage(position, 'position');
-
 	onDestroy(ls);
 </script>
 
@@ -22,11 +21,9 @@
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Assistant:200&display=swap" />
 </svelte:head>
 
-<svelte:window bind:innerWidth={width}
-							 bind:innerHeight={height} />
+<svelte:window bind:innerWidth={width} bind:innerHeight={height} />
 
-<svelte:body width={width}
-						 height={height}/>
+<svelte:body width={width} height={height}/>
 
 <div class="container-fluid">
 	<div class="row title">
@@ -47,7 +44,25 @@
 </div>
 
 <style>
-	:global(html, body) {
+	:global(html) {
+		margin: 0;
+		padding: 0;
+		font-size: 18px !important;
+	}
+
+	@media (max-width: 1200px) {
+  	:global(html) {
+			font-size: 16px !important;
+		}
+	}
+
+	@media (max-width: 767px) {
+  	:global(html) {
+			font-size: 11px !important;
+		}
+	}
+
+	:global(body) {
 		margin: 0;
 		padding: 0;
 	}
@@ -77,15 +92,15 @@
 		text-align: center;
 		color: #FFF;
 		font-family: Assistant, sans-serif;
-		font-weight: bold;
+		font-size: 4rem;
 	}
 
 	.graph {
-		height: 30%;
+		height: 40%;
 	}
 
 	.banner {
-		height: 30%;
+		height: 40%;
 		font-size: 2.5rem;
 		align-items: center;
 		text-align: center;

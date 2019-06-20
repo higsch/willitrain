@@ -1,108 +1,114 @@
 <script>
-  import * as d3 from 'd3'
+  import { scaleTime, 
+           scaleLinear, 
+           timeFormat, 
+           line,
+           curveBasis } from 'd3'
   import { position } from '../stores.js';
-  import { onMount, onDestroy } from 'svelte';
-
   import SMHI from '../smhi.js';
 
   let data;
-
+  let width, height;
   const margin = {
     top: 10,
-    right: 10,
+    right: 12,
     bottom: 30,
-    left: 10
-  };
-
-  let width;
-  let height;
-
-  const drawGraph = (data) => {
-    if (!data) return;
-
-    d3.selectAll('g').remove();
-
-    const svg = d3.select('#graph')
-      .append('g')
-      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-    
-    // x axis
-    const x = d3.scaleTime()
-      .domain([data[0].datetime, data[data.length - 1].datetime])
-      .range([0, width - margin.left - margin.right]);
-
-    svg.append('g')
-      .attr('class', 'x-axis')
-      .attr('transform', 'translate(0,' + (height - margin.top - margin.bottom) +')')
-      .call(d3.axisBottom(x)
-        .tickFormat(function(d) { return d3.timeFormat('%H')(d); }));
-
-    // y axis
-    const y = d3.scaleLinear()
-      //.domain([0, d3.max(data, function(d) { return d.pmedian; })])
-      .domain([0, 10])
-      .range([height - margin.top - margin.bottom, 0]);
-    
-    svg.append('g')
-      .attr('class', 'y-axis')
-      .call(d3.axisLeft(y));
-
-    // the line
-    svg.append('path')
-      .datum(data)
-      .attr('fill', '#73B6E6')
-      .attr('d', d3.line()
-        .x(function(d) { return x(d.datetime); })
-        .y(function(d) { return y(d.pmedian); })
-        .curve(d3.curveBasis)
-      );
+    left: 12
   };
 
   const fetchNewData = async (latlng) => {
     const prediction = await SMHI.fetchPrediction(latlng);
-    data = SMHI.extractRain(prediction);
+    const data_raw = SMHI.extractRain(prediction);
+    data = [{
+        datetime: data_raw[0].datetime,
+        value: 0
+      },
+      ...data_raw,
+      {
+        datetime: data_raw.slice(-1)[0].datetime,
+        value: 0
+      }];
   };
 
-  const subPosition = position.subscribe(value => {
-    if (value.lat && value.lng) {
-      fetchNewData(value);
-    }
-  });
-  
-  $: drawGraph(data, width, height);
+  const formatTick = (tick) => {
+		return((Number(tick) % 3 !== 0) && (width < 980) ? '' : tick);
+	}
 
-  onDestroy(subPosition);
+  $: fetchNewData($position);
+
+  let minDate, maxDate, xScale, yScale, xTicks, path, sum;
+  $: if (data) {
+      minDate = data[0].datetime;
+      maxDate = data[data.length - 1].datetime;
+
+      xScale = scaleTime()
+        .domain([minDate, maxDate])
+        .range([margin.left, width - margin.right]);
+
+      yScale = scaleLinear()
+        .domain([0, Math.max(...data.map(d => d.value))])
+        .range([height - margin.bottom, margin.top]);
+
+      xTicks = data.map(d => d.datetime);
+
+      path = line()
+        .x(d => xScale(d.datetime))
+        .y(d => yScale(d.value))
+        .curve(curveBasis)(data)
+      
+      sum = data.map(d => d.value).reduce((a, c) => a + c);
+  }
 </script>
 
+<div class="graph" bind:offsetWidth={width} bind:offsetHeight={height}>
+  {#if data}
+    <svg>
+      <g class="axis x-axis">
+        {#each xTicks.slice(1, xTicks.length - 1) as tick}
+          <g class="tick" transform="translate({xScale(tick)},{height - 5})">
+            <text>{formatTick(timeFormat('%H')(tick))}</text>
+          </g>
+        {/each}
+      </g>
+      <g class="axis y-axis" transform="translate(0, {margin.top})"></g>
+      <path class="path-area" d={path}></path>
+      {#if sum < 0.2}
+        <g class="no-rain" width="100%" height="100%">
+          <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">☀️ Looks quite dry.</text>
+        </g>
+      {/if}
+    </svg>
+  {/if}
+</div>
+
 <style>
-  #graph-area {
-    display: inline-block;
-    position: relative;
+  .graph {
     width: 100%;
-    vertical-align: top;
-    overflow: hidden;
   }
 
-  :global(path, line) {
-    stroke: #73B6E6;
+  svg {
+    position: relative;
+		width: 100%;
+		height: 100%;
+		overflow: visible;
   }
 
-  :global(.x-axis text) {
-    color: #777;
-    font-family: Assistant, sans-serif;
-    font-size: 1.4rem;
-  }
-
-  :global(.y-axis line, .y-axis text) {
+  .tick:last-child {
     visibility: hidden;
   }
-</style>
 
-<div id="graph-area"
-     bind:offsetWidth={width}
-     bind:offsetHeight={height}>
-  <svg id="graph"
-       width={width}
-       height={height}>
-  </svg>
-</div>
+  .tick text {
+    font-family: Assistant, sans-serif;
+    font-size: 1.7rem;
+		fill: #777;
+	}
+
+  .path-area {
+		fill: #73B6E6;
+	}
+
+  .no-rain text {
+    font-family: Assistant, sans-serif;
+    font-size: 3rem;
+  }
+</style>
