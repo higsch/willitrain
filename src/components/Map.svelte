@@ -11,9 +11,7 @@
     if (marker) {
       marker.setLatLng(latlng);
     } else {
-      marker = L.marker(latlng)
-        .setZIndexOffset(1000)
-        .addTo(map);
+      marker = L.marker(latlng).addTo(map);
     }
   };
 
