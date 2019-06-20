@@ -6,6 +6,7 @@
 
   let map;
   let marker;
+  let zoomLevel = 9;
 
   const addMarkerToMap = (latlng) => {
     if (marker) {
@@ -17,10 +18,10 @@
 
   onMount(() => {
     map = L.map('map', {
-      scrollWheelZoom: false
+      scrollWheelZoom: true
     });
 
-    map.setView([59.376, 18.079], 10);
+    map.setView([59.376, 18.079], zoomLevel);
 
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
         attribution: '',
@@ -29,7 +30,7 @@
         accessToken: mapboxToken
     }).once('load', (e) => {
       if ($position) {
-        map.setView($position);
+        map.setView($position, zoomLevel);
         addMarkerToMap($position);
       }
     }).addTo(map);
