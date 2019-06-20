@@ -9,9 +9,9 @@
 
   const margin = {
     top: 10,
-    right: 0,
+    right: 10,
     bottom: 30,
-    left: 30
+    left: 10
   };
 
   let width;
@@ -27,20 +27,24 @@
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
     
     // x axis
-    const x = d3.scaleLinear()
-      .domain(d3.extent(data, function(d) { return d.time; }))
+    const x = d3.scaleTime()
+      .domain([data[0].datetime, data[data.length - 1].datetime])
       .range([0, width - margin.left - margin.right]);
-    
+
     svg.append('g')
+      .attr('class', 'x-axis')
       .attr('transform', 'translate(0,' + (height - margin.top - margin.bottom) +')')
-      .call(d3.axisBottom(x));
+      .call(d3.axisBottom(x)
+        .tickFormat(function(d) { return d3.timeFormat('%H')(d); }));
 
     // y axis
     const y = d3.scaleLinear()
-      .domain([0, d3.max(data, function(d) { return + d.value; })])
+      //.domain([0, d3.max(data, function(d) { return d.pmedian; })])
+      .domain([0, 10])
       .range([height - margin.top - margin.bottom, 0]);
     
     svg.append('g')
+      .attr('class', 'y-axis')
       .call(d3.axisLeft(y));
 
     // the line
@@ -48,8 +52,8 @@
       .datum(data)
       .attr('fill', '#73B6E6')
       .attr('d', d3.line()
-        .x(function(d) { return x(d.time); })
-        .y(function(d) { return y(d.value); })
+        .x(function(d) { return x(d.datetime); })
+        .y(function(d) { return y(d.pmedian); })
         .curve(d3.curveBasis)
       );
   };
@@ -57,12 +61,11 @@
   const fetchNewData = async (latlng) => {
     const prediction = await SMHI.fetchPrediction(latlng);
     data = SMHI.extractRain(prediction);
-    return(data);
   };
 
   const subPosition = position.subscribe(value => {
     if (value.lat && value.lng) {
-      data = fetchNewData(value);
+      fetchNewData(value);
     }
   });
   
@@ -78,6 +81,20 @@
     width: 100%;
     vertical-align: top;
     overflow: hidden;
+  }
+
+  :global(path, line) {
+    stroke: #73B6E6;
+  }
+
+  :global(.x-axis text) {
+    color: #777;
+    font-family: Assistant, sans-serif;
+    font-size: 1.4rem;
+  }
+
+  :global(.y-axis line, .y-axis text) {
+    visibility: hidden;
   }
 </style>
 

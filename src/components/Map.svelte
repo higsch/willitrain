@@ -11,7 +11,9 @@
     if (marker) {
       marker.setLatLng(latlng);
     } else {
-      marker = L.marker(latlng).addTo(map);
+      marker = L.marker(latlng)
+        .setZIndexOffset(1000)
+        .addTo(map);
     }
   };
 
@@ -19,6 +21,7 @@
     map = L.map('map', {
       scrollWheelZoom: false
     });
+
     map.setView([59.376, 18.079], 10);
 
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
@@ -26,8 +29,9 @@
         maxZoom: 18,
         id: 'mapbox.streets',
         accessToken: mapboxToken
-    }).on('load', (e) => {
+    }).once('load', (e) => {
       if ($position) {
+        map.setView($position);
         addMarkerToMap($position);
       }
     }).addTo(map);

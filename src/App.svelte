@@ -34,10 +34,15 @@
 		min-height: 5rem;
 	}
 
+	.title {
+		background-color: #73B6E6;
+	}
+
 	.title h1 {
 		margin: 5px;
 		text-align: center;
-		color: #73B6E6;
+		color: #FFF;
+		font-family: Assistant, sans-serif;
 		font-weight: bold;
 	}
 
@@ -65,11 +70,12 @@
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
   			integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
   			crossorigin="" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Assistant:200&display=swap" />
 </svelte:head>
 
 <div class="container-fluid">
 	<div class="row title">
-		<h1>Will It Rain?</h1>
+		<h1>Will It Rain 🌧</h1>
 	</div>
 	{#if $position}
 		<div class="row graph">

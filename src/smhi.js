@@ -13,23 +13,25 @@ const fetchPrediction = async (pos) => {
 };
 
 const extractRain = (prediction) => {
-  const now = Date.now();
-  
   let parsed = prediction.timeSeries.map((e) => {
     return({
-      time: (Date.parse(e.validTime) - now) / (1000 * 60 * 60),
-      value: e.parameters.find(param => param.name === 'pmedian').values[0]
+      datetime: new Date(e.validTime),
+      pmedian: e.parameters.find(param => param.name === 'pmedian').values[0]
     });
   });
 
+  // keep only first 24 entries
+  parsed = parsed.slice(0, 24);
+
   // add a zero as first + last value to avoid weird fillings in the graph later
   parsed = [{
-    time: parsed[0].time,
-    value: 0
+    datetime: parsed[0].datetime,
+    pmedian: 0
   },
-  ...parsed, {
-    time: parsed.slice(-1)[0].time,
-    value: 0
+  ...parsed,
+  {
+    datetime: parsed.slice(-1)[0].datetime,
+    pmedian: 0
   }];
 
   return(parsed);
