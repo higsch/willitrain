@@ -6,7 +6,8 @@
 
   let map;
   let marker;
-  let zoomLevel = 9;
+  export let startCoordinates = [59.376, 18.079];
+  export let zoomLevel = 9;
 
   const addMarkerToMap = (latlng) => {
     if (marker) {
@@ -17,11 +18,11 @@
   };
 
   onMount(() => {
-    map = L.map('map', {
-      scrollWheelZoom: true
+		map = L.map('map', {
+      scrollWheelZoom: true,
+      center: startCoordinates,
+      zoom: zoomLevel
     });
-
-    map.setView([59.376, 18.079], zoomLevel);
 
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
         attribution: '',
@@ -39,8 +40,20 @@
       position.set(e.latlng);
       addMarkerToMap(e.latlng);
     });
+
+		return () => {
+			map.remove();
+		};
   });
 </script>
+
+<svelte:head>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+  			integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+  			crossorigin="" />
+</svelte:head>
+
+<div id="map"></div>
 
 <style>
   #map {
@@ -51,5 +64,3 @@
     padding: 0;
   }
 </style>
-
-<div id="map"></div>

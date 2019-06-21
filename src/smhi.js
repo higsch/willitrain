@@ -2,11 +2,11 @@ const round = (value, decimals) => {
   return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
 };
 
-const fetchPrediction = async (pos) => {
+const fetchPrediction = (pos) => {
   const lon = round(pos.lng, 6);
   const lat = round(pos.lat, 6);
   const url = `https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/${lon}/lat/${lat}/data.json`;
-  const res = await fetch(url)
+  const res = fetch(url)
     .then(res => res.json())
     .catch(err => console.error(err));;
   return(res);

@@ -1,18 +1,22 @@
 import { writable } from 'svelte/store';
 
-// current latlng object
-export const position = writable(null);
-
-// for persistance
-export function useLocalStorage(store, key) {
-  const json = localStorage.getItem(key);
-  if (json) {
-    store.set(JSON.parse(json));
-  }
+const createWritableStore = (key, startValue) => {
+  const { subscribe, set } = writable(startValue);
   
-  const unsubscribe = store.subscribe(current => {
-    localStorage.setItem(key, JSON.stringify(current));
-  });
-
-  return(unsubscribe);
+	return {
+    subscribe,
+    set,
+    useLocalStorage: () => {
+      const json = localStorage.getItem(key);
+      if (json) {
+        set(JSON.parse(json));
+      }
+      
+      subscribe(current => {
+        localStorage.setItem(key, JSON.stringify(current));
+      });
+    }
+	};
 }
+
+export const position = createWritableStore('position', null);

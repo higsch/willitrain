@@ -1,31 +1,22 @@
 <script>
 	import { onDestroy } from 'svelte';
-	import { position, useLocalStorage } from './stores.js';
+	import { position } from './stores.js';
 	import RainGraph from './components/RainGraph.svelte';
 	import Map from './components/Map.svelte';
 
 	let width, height;
 
-	// enable local storage for position
-	const ls = useLocalStorage(position, 'position');
-	onDestroy(ls);
+	position.useLocalStorage();
 </script>
 
 <svelte:head>
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-				integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
-				crossorigin="anonymous">
-	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
-  			integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
-  			crossorigin="" />
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Assistant:200&display=swap" />
 </svelte:head>
 
 <svelte:window bind:innerWidth={width} bind:innerHeight={height} />
+<svelte:body width={width} height={height} />
 
-<svelte:body width={width} height={height}/>
-
-<div class="container-fluid">
+<div class="container">
 	<div class="row title">
 		<h1>Will It Rain 🌧</h1>
 	</div>
@@ -67,7 +58,7 @@
 		padding: 0;
 	}
 
-	.container-fluid {
+	.container {
 		display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
@@ -80,15 +71,15 @@
 	.row {
 		display: flex;
 		justify-content: center;
-		min-height: 5rem;
 	}
 
 	.title {
+		height: 10%;
 		background-color: #73B6E6;
 	}
 
 	.title h1 {
-		margin: 5px;
+		margin: auto 5px;
 		text-align: center;
 		color: #FFF;
 		font-family: Assistant, sans-serif;
@@ -107,6 +98,6 @@
 	}
 
 	.map {
-		height: 100%;
+		height: 50%;
 	}
 </style>
