@@ -35,27 +35,31 @@
 </div>
 
 <style>
-	:global(html) {
+	:global(body) {
 		margin: 0;
 		padding: 0;
-		font-size: 18px !important;
 	}
 
-	@media (max-width: 1200px) {
+	:global(html) {
+		font-size: 14px !important;
+	}
+
+	@media (min-width: 600px) {
   	:global(html) {
 			font-size: 16px !important;
 		}
 	}
 
-	@media (max-width: 767px) {
+	@media (min-width: 980px) {
   	:global(html) {
-			font-size: 11px !important;
+			font-size: 18px !important;
 		}
 	}
 
-	:global(body) {
-		margin: 0;
-		padding: 0;
+	@media (min-width: 1260px) {
+  	:global(html) {
+			font-size: 20px !important;
+		}
 	}
 
 	.container {
@@ -75,7 +79,9 @@
 
 	.title {
 		height: 10%;
+		min-height: 3.6rem;
 		background-color: #73B6E6;
+		overflow: hidden;
 	}
 
 	.title h1 {
@@ -83,7 +89,7 @@
 		text-align: center;
 		color: #FFF;
 		font-family: Assistant, sans-serif;
-		font-size: 4rem;
+		font-size: 3rem;
 	}
 
 	.graph {

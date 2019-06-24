@@ -100,7 +100,7 @@
 
   .tick text {
     font-family: Assistant, sans-serif;
-    font-size: 1.7rem;
+    font-size: 1.2rem;
 		fill: #777;
 	}
 
