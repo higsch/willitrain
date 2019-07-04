@@ -65,16 +65,16 @@
     <svg>
       <g class="axis x-axis">
         {#each xTicks.slice(1, xTicks.length - 1) as tick}
-          <g class="tick" transform="translate({xScale(tick)},{height - 5})">
+          <g class="tick" transform="translate({xScale(tick)}, {height - 5})">
             <text>{formatTick(timeFormat('%H')(tick))}</text>
           </g>
         {/each}
       </g>
       <g class="axis y-axis" transform="translate(0, {margin.top})"></g>
       <path class="path-area" d={path}></path>
-      {#if sum < 0.2}
+      {#if sum === 0}
         <g class="no-rain" width="100%" height="100%">
-          <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">☀️ Looks quite dry.</text>
+          <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">Looks quite dry. 👍</text>
         </g>
       {/if}
     </svg>
